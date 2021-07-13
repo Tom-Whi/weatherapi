@@ -3,6 +3,15 @@ provider "azurerm" {
     features {}
 }
 
+terraform {
+  backend "azurerm" {
+    resource_group_name   = "TF-StateStore"
+    storage_account_name  = "tomwhiterraform"
+    container_name        = "state"
+    key                   = "terraform.tfstate"
+  }
+}
+
 variable "imagebuild" {
   type        = string
   default     = "latest"
@@ -10,14 +19,14 @@ variable "imagebuild" {
 }
 
 resource "azurerm_resource_group" "tf_test" {
-  name = "tfmainrg"
-  location = "UK South"
+  name      = "tfmainrg"
+  location  = "UK South"
 }
 
 resource "azurerm_container_group" "tfcg_test" {
-  name                      = "weatherapi"
-  location                  = azurerm_resource_group.tf_test.location
-  resource_group_name       = azurerm_resource_group.tf_test.name
+  name                = "weatherapi"
+  location            = azurerm_resource_group.tf_test.location
+  resource_group_name = azurerm_resource_group.tf_test.name
 
   ip_address_type     = "public"
   dns_name_label      = "tomwhiweather"
@@ -26,8 +35,8 @@ resource "azurerm_container_group" "tfcg_test" {
   container {
       name            = "weatherapi"
       image           = "tomwhi69/weatherapi:${var.imagebuild}"
-        cpu             = "1"
-        memory          = "1"
+        cpu           = "1"
+        memory        = "1"
 
         ports {
             port        = 80
